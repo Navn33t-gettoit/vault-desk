@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+/* ——— Vault Desk · Visual Silence ——— */
+:root {
+  --silence-bg: #0c0c0d;
+  --silence-surface: #121214;
+  --silence-text: rgba(245, 240, 232, 0.88);
+  --silence-text-muted: rgba(245, 240, 232, 0.42);
+  --silence-text-faint: rgba(245, 240, 232, 0.28);
+  --silence-border: rgba(245, 240, 232, 0.06);
+  --silence-glow: rgba(255, 191, 0, 0.05);
+  --silence-glow-hover: rgba(255, 191, 0, 0.08);
+  --silence-glow-blur: 28px;
+
+  /* Generous structural padding (ma) */
+  --silence-pad-page: 3rem;
+  --silence-pad-section: 2rem;
+  --silence-pad-card: 1.75rem;
+  --silence-pad-inline: 1.25rem;
+
+  --background: var(--silence-bg);
+  --foreground: var(--silence-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-silence-bg: var(--silence-bg);
+  --color-silence-surface: var(--silence-surface);
+  --color-silence-muted: var(--silence-text-muted);
+  --color-silence-faint: var(--silence-text-faint);
+  --color-silence-border: var(--silence-border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --spacing-silence-page: var(--silence-pad-page);
+  --spacing-silence-section: var(--silence-pad-section);
+  --spacing-silence-card: var(--silence-pad-card);
+  --spacing-silence-inline: var(--silence-pad-inline);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--silence-bg);
+  color: var(--silence-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  line-height: 1.65;
+  min-height: 100%;
+}
+
+/* ——— Layout: maximum negative space ——— */
+.silence-page {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--silence-pad-page) var(--silence-pad-inline);
+}
+
+/* Note view: full-bleed reading surface, aligned with dashboard padding */
+.silence-page.note-view {
+  max-width: none;
+  width: 100%;
+}
+
+.silence-section {
+  padding-block: var(--silence-pad-section);
+}
+
+.silence-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--silence-pad-section);
+}
+
+/* ——— Soft glow (no gradients) ——— */
+.soft-glow {
+  box-shadow: 0 0 var(--silence-glow-blur) var(--silence-glow);
+  transition: box-shadow 0.25s ease;
+}
+
+.soft-glow:hover {
+  box-shadow: 0 0 calc(var(--silence-glow-blur) * 1.15) var(--silence-glow-hover);
+}
+
+.silence-surface {
+  background: var(--silence-surface);
+  border: 1px solid var(--silence-border);
+  border-radius: 2px;
+  padding: var(--silence-pad-card);
+}
+
+.silence-meta {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  color: var(--silence-text-muted);
+}
+
+/* ——— Note prose: sparse monospace-adjacent reading ——— */
+.silence-prose {
+  line-height: 1.85;
+  color: var(--silence-text);
+}
+
+.silence-prose h1,
+.silence-prose h2,
+.silence-prose h3,
+.silence-prose h4 {
+  font-family: var(--font-geist-mono), monospace;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--silence-text);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.silence-prose h1 { font-size: 1.25rem; }
+.silence-prose h2 { font-size: 1.0625rem; color: rgba(245, 240, 232, 0.78); }
+.silence-prose h3 { font-size: 0.9375rem; }
+
+.silence-prose p {
+  margin-bottom: 1.25rem;
+  color: rgba(245, 240, 232, 0.78);
+}
+
+.silence-prose ul,
+.silence-prose ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.silence-prose li {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.875rem;
+  color: rgba(245, 240, 232, 0.72);
+}
+
+.silence-prose a {
+  color: rgba(255, 191, 0, 0.55);
+  text-decoration: none;
+}
+
+.silence-prose a:hover {
+  opacity: 0.85;
+}
+
+.silence-prose code {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.8125rem;
+  background: var(--silence-bg);
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+}
+
+.silence-prose blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--silence-border);
+  color: var(--silence-text-muted);
+  font-style: normal;
+}
+
+.silence-prose hr {
+  border: none;
+  border-top: 1px solid var(--silence-border);
+  margin: 2.5rem 0;
+}
+
+.silence-prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem 0;
+  border-radius: 2px;
+  border: 1px solid var(--silence-border);
+}
+
+.silence-youtube {
+  position: relative;
+  width: 100%;
+  max-width: 56rem;
+  margin: 1.75rem 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 2px;
+  border: 1px solid var(--silence-border);
+  box-shadow: 0 0 var(--silence-glow-blur) var(--silence-glow);
+}
+
+.silence-youtube iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--silence-bg);
+}
