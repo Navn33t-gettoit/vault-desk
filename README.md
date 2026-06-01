@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vault Desk 🖥️🔮
 
-## Getting Started
+An ultra-premium, distraction-free desktop web interface built on top of local Obsidian Vaults. It provides a lightning-fast, highly aesthetic frontend layer for reading and writing Markdown notes with real-time bi-directional local sync.
 
-First, run the development server:
+⚠️ **Privacy First:** Vault Desk reads your files directly from your local disk. Your notes, file names, and personal data are never sent to a database, tracked by Git, or uploaded to the cloud.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🎨 Themes Included
+Toggle between three meticulously calibrated layouts from the global header:
+- **Midnight:** Sleek, high-contrast dark mode.
+- **Paper:** Warm linen off-white layout with rich charcoal ink typography.
+- **Imperial Datapad:** Tactical, monochromatic terminal layout with a monospace font stack and UI glow.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Features
+- **Bi-Directional Local Sync:** Edits and links are instantly written back to your raw Obsidian `.md` files.
+- **Contextual Typography Scaling:** Instantly scale workspace text between Medium and Large footprints with smooth animations.
+- **Hidden Drag-and-Drop Grid:** Reorder note cards and build custom workspace hierarchies completely visually.
+- **Real-Time Analytics:** Live word count and reading time tracker anchored to the bottom system bar.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 How to Run Locally
+1. Clone this repository.
+2. Run `npm install` to load dependencies.
+3. Configure your local path string in the source code to point to your local Obsidian Vault directory.
+4. Run `npm run dev` and open `http://localhost:3001`.
