@@ -1,18 +1,27 @@
 @import "tailwindcss";
 
-/* ——— Vault Desk · Visual Silence ——— */
-:root {
-  --silence-bg: #0c0c0d;
-  --silence-surface: #121214;
-  --silence-text: rgba(245, 240, 232, 0.88);
-  --silence-text-muted: rgba(245, 240, 232, 0.42);
-  --silence-text-faint: rgba(245, 240, 232, 0.28);
-  --silence-border: rgba(245, 240, 232, 0.06);
-  --silence-glow: rgba(255, 191, 0, 0.05);
-  --silence-glow-hover: rgba(255, 191, 0, 0.08);
-  --silence-glow-blur: 28px;
+/* ——— Semantic theme tokens ——— */
+:root,
+[data-theme="midnight"] {
+  color-scheme: dark;
 
-  /* Generous structural padding (ma) */
+  /* Midnight · deep zinc canvas, silver-white body */
+  --silence-bg: #09090b;
+  --silence-surface: #18181b;
+  --silence-text: #f4f4f5;
+  --silence-text-body: #e4e4e7;
+  --silence-text-muted: #a1a1aa;
+  --silence-text-faint: #71717a;
+  --silence-accent: #fbbf24;
+  --silence-border: rgb(244 244 245 / 0.08);
+  --silence-glow: rgb(251 191 36 / 0.05);
+  --silence-glow-hover: rgb(251 191 36 / 0.1);
+  --silence-glow-blur: 28px;
+  --silence-caret: #fbbf24;
+  --silence-code-bg: #09090b;
+  --silence-font-body: var(--font-geist-sans), system-ui, sans-serif;
+  --silence-font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
   --silence-pad-page: 3rem;
   --silence-pad-section: 2rem;
   --silence-pad-card: 1.75rem;
@@ -20,6 +29,65 @@
 
   --background: var(--silence-bg);
   --foreground: var(--silence-text);
+
+  /* Reading scale · medium (default) */
+  --silence-read-size: 1rem;
+  --silence-read-leading: 1.75;
+  --silence-read-h1: 1.25rem;
+  --silence-read-h2: 1.0625rem;
+  --silence-read-h3: 0.9375rem;
+  --silence-read-li: 0.875rem;
+  --silence-read-code: 0.8125rem;
+}
+
+[data-text-size="large"] {
+  --silence-read-size: 1.25rem;
+  --silence-read-leading: 1.85;
+  --silence-read-h1: 1.5rem;
+  --silence-read-h2: 1.3125rem;
+  --silence-read-h3: 1.125rem;
+  --silence-read-li: 1.0625rem;
+  --silence-read-code: 0.9375rem;
+}
+
+[data-theme="paper"] {
+  color-scheme: light;
+
+  /* Paper · warm linen canvas, charcoal ink */
+  --silence-bg: #fcfbfa;
+  --silence-surface: #f5f5f4;
+  --silence-text: #18181b;
+  --silence-text-body: #27272a;
+  --silence-text-muted: #78716c;
+  --silence-text-faint: #a8a29e;
+  --silence-accent: #b45309;
+  --silence-border: rgb(24 24 27 / 0.1);
+  --silence-glow: rgb(120 113 108 / 0.08);
+  --silence-glow-hover: rgb(120 113 108 / 0.14);
+  --silence-caret: #78716c;
+  --silence-code-bg: #e7e5e4;
+  --silence-font-body: var(--font-geist-sans), system-ui, sans-serif;
+  --silence-font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+[data-theme="datapad"] {
+  color-scheme: dark;
+
+  /* Datapad · pitch black, emerald body + amber accents */
+  --silence-bg: #000000;
+  --silence-surface: #0a0a0a;
+  --silence-text: #34d399;
+  --silence-text-body: #6ee7b7;
+  --silence-text-muted: #059669;
+  --silence-text-faint: #047857;
+  --silence-accent: #f59e0b;
+  --silence-border: rgb(52 211 153 / 0.18);
+  --silence-glow: rgb(52 211 153 / 0.08);
+  --silence-glow-hover: rgb(245 158 11 / 0.14);
+  --silence-caret: #f59e0b;
+  --silence-code-bg: rgb(52 211 153 / 0.06);
+  --silence-font-body: var(--font-geist-mono), "Courier New", monospace;
+  --silence-font-mono: var(--font-geist-mono), "Courier New", monospace;
 }
 
 @theme inline {
@@ -27,8 +95,11 @@
   --color-foreground: var(--foreground);
   --color-silence-bg: var(--silence-bg);
   --color-silence-surface: var(--silence-surface);
+  --color-silence-text: var(--silence-text);
+  --color-silence-body: var(--silence-text-body);
   --color-silence-muted: var(--silence-text-muted);
   --color-silence-faint: var(--silence-text-faint);
+  --color-silence-accent: var(--silence-accent);
   --color-silence-border: var(--silence-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -38,26 +109,41 @@
   --spacing-silence-inline: var(--silence-pad-inline);
 }
 
-html {
-  color-scheme: dark;
-}
-
 body {
   background: var(--silence-bg);
   color: var(--silence-text);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--silence-font-body);
   line-height: 1.65;
   min-height: 100%;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-/* ——— Layout: maximum negative space ——— */
+/* ——— Global app chrome ——— */
+.silence-app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem var(--silence-pad-inline);
+  background: var(--silence-bg);
+  border-bottom: 1px solid var(--silence-border);
+}
+
+.silence-app-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ——— Layout ——— */
 .silence-page {
   max-width: 72rem;
   margin-inline: auto;
   padding: var(--silence-pad-page) var(--silence-pad-inline);
 }
 
-/* Note view: full-bleed reading surface, aligned with dashboard padding */
 .silence-page.note-view {
   max-width: none;
   width: 100%;
@@ -73,7 +159,7 @@ body {
   gap: var(--silence-pad-section);
 }
 
-/* ——— Soft glow (no gradients) ——— */
+/* ——— Surfaces & controls ——— */
 .soft-glow {
   box-shadow: 0 0 var(--silence-glow-blur) var(--silence-glow);
   transition: box-shadow 0.25s ease;
@@ -88,26 +174,90 @@ body {
   border: 1px solid var(--silence-border);
   border-radius: 2px;
   padding: var(--silence-pad-card);
+  color: var(--silence-text);
+}
+
+.silence-chip {
+  font-family: var(--silence-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  color: var(--silence-text-muted);
+  border: 1px solid var(--silence-border);
+  border-radius: 2px;
+  padding: 0.25rem 0.625rem;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .silence-meta {
-  font-family: var(--font-geist-mono), monospace;
+  font-family: var(--silence-font-mono);
   font-size: 0.6875rem;
   letter-spacing: 0.05em;
   color: var(--silence-text-muted);
 }
 
-/* ——— Note prose: sparse monospace-adjacent reading ——— */
-.silence-prose {
-  line-height: 1.85;
+.silence-meta-faint {
+  color: var(--silence-text-faint);
+}
+
+.silence-heading {
   color: var(--silence-text);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.silence-body {
+  color: var(--silence-text-body);
+}
+
+.silence-link {
+  color: var(--silence-accent);
+  text-decoration: none;
+}
+
+.silence-link:hover {
+  opacity: 0.85;
+}
+
+.silence-editor-input {
+  color: var(--silence-text-body);
+  caret-color: var(--silence-caret);
+  font-family: var(--silence-font-mono);
+  font-size: var(--silence-read-size);
+  line-height: var(--silence-read-leading);
+  transition: font-size 0.2s ease, line-height 0.2s ease;
+}
+
+.silence-status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 1rem;
+  background: var(--silence-bg);
+  border-top: 1px solid var(--silence-border);
+  pointer-events: none;
+}
+
+/* ——— Note prose ——— */
+.silence-prose {
+  font-size: var(--silence-read-size);
+  line-height: var(--silence-read-leading);
+  color: var(--silence-text-body);
+  transition: font-size 0.2s ease, line-height 0.2s ease;
 }
 
 .silence-prose h1,
 .silence-prose h2,
 .silence-prose h3,
 .silence-prose h4 {
-  font-family: var(--font-geist-mono), monospace;
+  font-family: var(--silence-font-mono);
   font-weight: 400;
   letter-spacing: 0.03em;
   color: var(--silence-text);
@@ -115,13 +265,13 @@ body {
   margin-bottom: 1rem;
 }
 
-.silence-prose h1 { font-size: 1.25rem; }
-.silence-prose h2 { font-size: 1.0625rem; color: rgba(245, 240, 232, 0.78); }
-.silence-prose h3 { font-size: 0.9375rem; }
+.silence-prose h1 { font-size: var(--silence-read-h1); }
+.silence-prose h2 { font-size: var(--silence-read-h2); color: var(--silence-text-body); }
+.silence-prose h3 { font-size: var(--silence-read-h3); }
 
 .silence-prose p {
   margin-bottom: 1.25rem;
-  color: rgba(245, 240, 232, 0.78);
+  color: var(--silence-text-body);
 }
 
 .silence-prose ul,
@@ -132,13 +282,13 @@ body {
 
 .silence-prose li {
   margin-bottom: 0.5rem;
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.875rem;
-  color: rgba(245, 240, 232, 0.72);
+  font-family: var(--silence-font-mono);
+  font-size: var(--silence-read-li);
+  color: var(--silence-text-body);
 }
 
 .silence-prose a {
-  color: rgba(255, 191, 0, 0.55);
+  color: var(--silence-accent);
   text-decoration: none;
 }
 
@@ -147,9 +297,10 @@ body {
 }
 
 .silence-prose code {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.8125rem;
-  background: var(--silence-bg);
+  font-family: var(--silence-font-mono);
+  font-size: var(--silence-read-code);
+  background: var(--silence-code-bg);
+  color: var(--silence-text);
   padding: 0.15rem 0.4rem;
   border-radius: 2px;
 }
@@ -196,4 +347,77 @@ body {
   height: 100%;
   border: none;
   background: var(--silence-bg);
+}
+
+/* ——— Dashboard drag-and-drop ——— */
+.dashboard-dnd-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--silence-pad-inline);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-dnd-card {
+  cursor: grab;
+  touch-action: none;
+}
+
+.dashboard-dnd-card:active {
+  cursor: grabbing;
+}
+
+@media (min-width: 640px) {
+  .dashboard-dnd-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-dnd-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.dashboard-dnd-source-hidden {
+  opacity: 0.35;
+}
+
+.dashboard-dnd-dragging {
+  opacity: 0.92;
+  transform: scale(1.015);
+  box-shadow: 0 0 calc(var(--silence-glow-blur) * 1.2) var(--silence-glow-hover);
+}
+
+.dashboard-dnd-nest-target {
+  outline: 2px dashed var(--silence-accent);
+  outline-offset: 3px;
+  box-shadow:
+    0 0 calc(var(--silence-glow-blur) * 0.85) var(--silence-glow-hover),
+    inset 0 0 0 1px var(--silence-border);
+}
+
+.dashboard-dnd-overlay {
+  width: min(100%, 20rem);
+  cursor: grabbing;
+  rotate: -1deg;
+}
+
+.dashboard-folder {
+  min-height: 100%;
+}
+
+.dashboard-folder-children {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-dnd-nested-item article,
+.dashboard-dnd-nested-item .dashboard-folder {
+  border-style: dashed;
 }

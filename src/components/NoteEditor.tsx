@@ -2,6 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { renderMarkdown } from "@/lib/markdown";
+import { TextSizeToggle } from "@/components/TextSizeToggle";
+import {
+  computeMarkdownStats,
+  formatMarkdownStats,
+} from "@/lib/markdown-stats";
 
 type NoteEditorProps = {
   slug: string;
@@ -18,6 +23,8 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
   const lastSaved = useRef(initialContent);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const stats = useMemo(() => computeMarkdownStats(content), [content]);
+  const statsLabel = useMemo(() => formatMarkdownStats(stats), [stats]);
   const previewHtml = useMemo(() => renderMarkdown(content), [content]);
 
   const toggleMode = useCallback(() => {
@@ -66,7 +73,6 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
         void save();
         return;
       }
-
       if (event.key === "Escape") {
         event.preventDefault();
         toggleMode();
@@ -89,46 +95,52 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
             : "⌘S to save";
 
   return (
-    <div className="relative z-10 w-full">
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <span className="silence-meta opacity-60">
-          {statusLabel}
-          {mode === "preview" && (
-            <span className="ml-3 opacity-70">· Esc to edit</span>
-          )}
-          {mode === "edit" && (
-            <span className="ml-3 opacity-70">· Esc to preview</span>
-          )}
-        </span>
-        <button
-          type="button"
-          onClick={toggleMode}
-          className="silence-meta soft-glow rounded-sm border border-[var(--silence-border)] px-2.5 py-1 transition-opacity hover:opacity-90"
-          aria-pressed={mode === "preview"}
-        >
-          {mode === "edit" ? "Preview" : "Edit"}
-        </button>
+    <>
+      <div className="relative z-10 w-full pb-10">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <span className="silence-meta silence-meta-faint">
+            {statusLabel}
+            <span className="ml-3">
+              · Esc to {mode === "edit" ? "preview" : "edit"}
+            </span>
+          </span>
+          <div className="flex items-center gap-2">
+            <TextSizeToggle />
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="silence-chip soft-glow"
+              aria-pressed={mode === "preview"}
+            >
+              {mode === "edit" ? "Preview" : "Edit"}
+            </button>
+          </div>
+        </div>
+
+        {mode === "edit" ? (
+          <textarea
+            className="silence-editor-input relative z-10 block w-full min-h-[70vh] resize-none border-none bg-transparent outline-none"
+            value={content}
+            readOnly={saveState === "saving"}
+            onChange={(event) => {
+              setSaveState("idle");
+              setContent(event.target.value);
+            }}
+            spellCheck={false}
+            aria-label="Note content"
+            aria-busy={saveState === "saving"}
+          />
+        ) : (
+          <div
+            className="silence-prose relative z-10 min-h-[70vh] w-full"
+            dangerouslySetInnerHTML={{ __html: previewHtml }}
+          />
+        )}
       </div>
 
-      {mode === "edit" ? (
-        <textarea
-          className="relative z-10 block w-full min-h-[70vh] resize-none border-none bg-transparent font-mono text-lg leading-relaxed text-neutral-200 outline-none caret-[rgba(255,191,0,0.55)]"
-          value={content}
-          readOnly={saveState === "saving"}
-          onChange={(event) => {
-            setSaveState("idle");
-            setContent(event.target.value);
-          }}
-          spellCheck={false}
-          aria-label="Note content"
-          aria-busy={saveState === "saving"}
-        />
-      ) : (
-        <div
-          className="silence-prose relative z-10 min-h-[70vh] w-full text-lg leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: previewHtml }}
-        />
-      )}
-    </div>
+      <footer className="silence-status-bar">
+        <span className="silence-meta silence-meta-faint">{statsLabel}</span>
+      </footer>
+    </>
   );
 }

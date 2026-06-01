@@ -46,10 +46,12 @@ export default async function NotePage({ params }: Props) {
       <article className="silence-surface soft-glow relative w-full">
         <header className="mb-[var(--silence-pad-section)] border-b border-[var(--silence-border)] pb-[var(--silence-pad-section)]">
           {parentContext(slug) && (
-            <p className="silence-meta mb-2 opacity-50">{parentContext(slug)}</p>
+            <p className="silence-meta silence-meta-faint mb-2">
+              {parentContext(slug)}
+            </p>
           )}
           <p className="silence-meta mb-2">Note · editable</p>
-          <h1 className="font-mono text-xl font-normal tracking-wide text-[var(--silence-text)]">
+          <h1 className="silence-heading font-mono text-xl tracking-wide">
             {displayTitle(slug)}
           </h1>
         </header>

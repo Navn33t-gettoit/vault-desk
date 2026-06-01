@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppShell } from "@/components/AppShell";
+import { THEME_STORAGE_KEY } from "@/lib/themes";
+import { TEXT_SIZE_STORAGE_KEY } from "@/lib/text-size";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,6 +20,8 @@ export const metadata: Metadata = {
   description: "Minimal reading surface for your Obsidian vault",
 };
 
+const themeBootScript = `(function(){try{var tk=${JSON.stringify(THEME_STORAGE_KEY)};var sk=${JSON.stringify(TEXT_SIZE_STORAGE_KEY)};var t=localStorage.getItem(tk);if(t==='midnight'||t==='paper'||t==='datapad'){document.documentElement.setAttribute('data-theme',t);}var s=localStorage.getItem(sk);if(s==='medium'||s==='large'){document.documentElement.setAttribute('data-text-size',s);}}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,8 +31,14 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
+      </head>
+      <body className="min-h-full">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
