@@ -1,23 +1,32 @@
-# Vault Desk 🖥️🔮
+# Vault Desk
 
-An ultra-premium, distraction-free desktop web interface built on top of local Obsidian Vaults. It provides a lightning-fast, highly aesthetic frontend layer for reading and writing Markdown notes with real-time bi-directional local sync.
+A local-first desktop interface for Obsidian Vaults.
 
-⚠️ **Privacy First:** Vault Desk reads your files directly from your local disk. Your notes, file names, and personal data are never sent to a database, tracked by Git, or uploaded to the cloud.
+Vault Desk provides a clean, distraction-free frontend for reading and writing Markdown notes while keeping your vault as the source of truth. Every edit made inside Vault Desk is written directly back to your raw `.md` files in real time.
 
-## 🎨 Themes Included
-Toggle between three meticulously calibrated layouts from the global header:
-- **Midnight:** Sleek, high-contrast dark mode.
-- **Paper:** Warm linen off-white layout with rich charcoal ink typography.
-- **Imperial Datapad:** Tactical, monochromatic terminal layout with a monospace font stack and UI glow.
+### Privacy First
 
-## 🛠️ Features
-- **Bi-Directional Local Sync:** Edits and links are instantly written back to your raw Obsidian `.md` files.
-- **Contextual Typography Scaling:** Instantly scale workspace text between Medium and Large footprints with smooth animations.
-- **Hidden Drag-and-Drop Grid:** Reorder note cards and build custom workspace hierarchies completely visually.
-- **Real-Time Analytics:** Live word count and reading time tracker anchored to the bottom system bar.
+Your vault stays on your machine.
 
-## 🚀 How to Run Locally
-1. Clone this repository.
-2. Run `npm install` to load dependencies.
-3. Configure your local path string in the source code to point to your local Obsidian Vault directory.
-4. Run `npm run dev` and open `http://localhost:3001`.
+Vault Desk reads notes directly from your local filesystem and does not require a database, cloud sync service, or external account. Your notes, filenames, and personal data never leave your device.
+
+### Themes
+
+Choose between three distinct workspace styles:
+
+* **Midnight** — High-contrast dark workspace.
+* **Paper** — Warm, document-inspired reading experience.
+* **Imperial Datapad** — Monochrome terminal-inspired interface with a retro tactical aesthetic.
+
+### Features
+
+* **Real-Time Bi-Directional Sync** — Changes are instantly reflected in your underlying Obsidian Markdown files.
+* **Visual Workspace Organization** — Drag and drop note cards to create custom layouts.
+* **Contextual Typography Scaling** — Adjust workspace density and reading comfort instantly.
+* **Live Reading Metrics** — Word count and reading time update in real time.
+
+### Why I Built It
+
+I love Obsidian because my notes are plain files that I fully own.
+
+Vault Desk started as an experiment to create a different way of interacting with those files without giving up the simplicity, portability, and privacy of a local Markdown vault.
