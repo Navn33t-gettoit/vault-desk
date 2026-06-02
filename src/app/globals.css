@@ -421,3 +421,39 @@ body {
 .dashboard-dnd-nested-item .dashboard-folder {
   border-style: dashed;
 }
+
+/* ——— Vault scanner ——— */
+.vault-scanner-input {
+  width: 100%;
+  border: 1px solid var(--silence-border);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--silence-text-body);
+  font-family: var(--silence-font-mono);
+  font-size: 0.8125rem;
+  padding: 0.625rem 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vault-scanner-input:focus {
+  border-color: var(--silence-accent);
+  box-shadow: 0 0 calc(var(--silence-glow-blur) * 0.5) var(--silence-glow);
+}
+
+.vault-scanner-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ——— Topic navigation tabs ——— */
+.topic-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.topic-tab-active {
+  color: var(--silence-text);
+  border-color: var(--silence-accent);
+}

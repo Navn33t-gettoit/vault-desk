@@ -84,7 +84,12 @@ function NoteCardContent({
       {parentContext(slug) && (
         <p className="silence-meta silence-meta-faint mb-2">{parentContext(slug)}</p>
       )}
-      <h2 className="silence-heading text-base tracking-wide">{displayTitle(slug)}</h2>
+      {note?.topic && note.topic !== "Root" && (
+        <p className="silence-meta silence-meta-faint mb-2">{note.topic}</p>
+      )}
+      <h2 className="silence-heading text-base tracking-wide">
+        {note?.title ?? displayTitle(slug)}
+      </h2>
       {note && (
         <p className="silence-meta mt-4">{formatUpdatedAt(note.updatedAt)}</p>
       )}
@@ -337,7 +342,7 @@ export function DashboardGrid({ notes }: DashboardGridProps) {
   if (notes.length === 0) {
     return (
       <p className="silence-meta py-[var(--silence-pad-page)] text-center">
-        No notes found. Check VAULT_PATH in src/lib/vault.ts
+        No notes found. Run an initialization scan above or check your vault path.
       </p>
     );
   }

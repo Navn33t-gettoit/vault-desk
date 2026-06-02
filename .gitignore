@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vault desk runtime config (written by initialization scan)
+.vault-desk/

@@ -1,6 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
+import { getConfiguredVaultPath } from "@/lib/vault-config.server";
 
+/** @deprecated Use runtime config from initialization scan. Fallback default only. */
 export const VAULT_PATH = "/Users/navn33t/Desktop";
 
 const SKIP_DIRS = new Set([".obsidian", "node_modules", ".git"]);
@@ -16,7 +18,8 @@ function isMarkdownFile(filename: string): boolean {
 
 function shouldSkipEntry(name: string, isDirectory: boolean): boolean {
   if (name === ".DS_Store") return true;
-  if (isDirectory) return SKIP_DIRS.has(name);
+  if (name.startsWith(".")) return true;
+  if (isDirectory && SKIP_DIRS.has(name)) return true;
   return false;
 }
 
@@ -31,6 +34,10 @@ function normalizeSlug(rawSlug: string): string {
     slug = rawSlug;
   }
   return slug;
+}
+
+async function getVaultRoot(): Promise<string> {
+  return getConfiguredVaultPath();
 }
 
 /** Recursively scan a directory and return all markdown files found beneath it. */
@@ -79,13 +86,14 @@ async function scanDirectory(
 }
 
 export async function getLatestNotes(): Promise<VaultNote[]> {
-  console.log("Searching vault path:", VAULT_PATH);
+  const vaultRoot = await getVaultRoot();
+  console.log("Searching vault path:", vaultRoot);
 
   try {
-    const rootItems = await fs.readdir(VAULT_PATH);
+    const rootItems = await fs.readdir(vaultRoot);
     console.log("All items in root:", rootItems);
 
-    const notes = await scanDirectory(VAULT_PATH);
+    const notes = await scanDirectory(vaultRoot);
     const sorted = notes.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
     console.log(`[vault] Found ${sorted.length} markdown file(s)`);
@@ -105,7 +113,7 @@ export type VaultNoteContent = {
 
 export async function getNoteBySlug(rawSlug: string): Promise<VaultNoteContent | null> {
   const slug = normalizeSlug(rawSlug);
-  const filePath = resolveNoteFilePath(slug);
+  const filePath = await resolveNoteFilePath(slug);
   if (!filePath) return null;
 
   try {
@@ -117,13 +125,13 @@ export async function getNoteBySlug(rawSlug: string): Promise<VaultNoteContent |
   }
 }
 
-/** Resolve slug to an absolute .md path inside VAULT_PATH, or null if invalid. */
-export function resolveNoteFilePath(rawSlug: string): string | null {
+/** Resolve slug to an absolute .md path inside the configured vault, or null if invalid. */
+export async function resolveNoteFilePath(rawSlug: string): Promise<string | null> {
   const slug = normalizeSlug(rawSlug);
   if (!slug || slug.includes("..")) return null;
 
-  const filePath = path.resolve(VAULT_PATH, `${slug}.md`);
-  const vaultRoot = path.resolve(VAULT_PATH);
+  const vaultRoot = path.resolve(await getVaultRoot());
+  const filePath = path.resolve(vaultRoot, `${slug}.md`);
 
   if (filePath !== vaultRoot && !filePath.startsWith(`${vaultRoot}${path.sep}`)) {
     return null;
@@ -133,7 +141,7 @@ export function resolveNoteFilePath(rawSlug: string): string | null {
 }
 
 export async function saveNoteBySlug(rawSlug: string, content: string): Promise<boolean> {
-  const filePath = resolveNoteFilePath(rawSlug);
+  const filePath = await resolveNoteFilePath(rawSlug);
   if (!filePath) return false;
 
   try {

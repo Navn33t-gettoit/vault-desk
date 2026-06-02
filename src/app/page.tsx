@@ -1,5 +1,7 @@
 import { DashboardHeader } from "@/components/DashboardHeader";
-import { DashboardGrid } from "@/components/DashboardGrid";
+import { DashboardWorkspace } from "@/components/DashboardWorkspace";
+import { getConfiguredVaultPath } from "@/lib/vault-config.server";
+import { deriveTopic } from "@/lib/vault-scan-types";
 import { getLatestNotes } from "@/lib/vault";
 
 export const dynamic = "force-dynamic";
@@ -7,10 +9,17 @@ export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
 export default async function Home() {
-  const notes = await getLatestNotes();
+  const [notes, vaultPath] = await Promise.all([
+    getLatestNotes(),
+    getConfiguredVaultPath(),
+  ]);
+
   const serializedNotes = notes.map((note) => ({
     slug: note.slug,
     updatedAt: note.updatedAt.toISOString(),
+    topic: deriveTopic(`${note.slug}.md`),
+    title: note.slug.split("/").pop()?.replace(/\.md$/i, "") ?? note.slug,
+    relativePath: `${note.slug}.md`,
   }));
 
   return (
@@ -18,10 +27,10 @@ export default async function Home() {
       <DashboardHeader />
 
       <section className="silence-section pt-[var(--silence-pad-section)]">
-        <p className="silence-meta silence-meta-faint mb-4">
-          Drag to reorder · drop onto a card to bundle into a sub-vault
-        </p>
-        <DashboardGrid notes={serializedNotes} />
+        <DashboardWorkspace
+          initialNotes={serializedNotes}
+          initialVaultPath={vaultPath}
+        />
       </section>
     </main>
   );

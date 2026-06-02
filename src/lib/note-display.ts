@@ -1,6 +1,9 @@
 export type DashboardNote = {
   slug: string;
   updatedAt: string;
+  title?: string;
+  topic?: string;
+  relativePath?: string;
 };
 
 export function noteHref(slug: string): string {
