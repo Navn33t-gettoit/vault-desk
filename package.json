@@ -2,7 +2,7 @@
   "name": "vault-desk",
   "version": "0.1.0",
   "private": true,
-  "main": "electron/main.mjs",
+  "main": "electron/main.cjs",
   "engines": {
     "node": ">=20"
   },
@@ -12,7 +12,7 @@
     "build": "next build",
     "start": "node scripts/start-server.mjs",
     "start:prod": "npm run build && npm run start",
-    "app": "node scripts/ensure-built.mjs && electron .",
+    "app": "node scripts/ensure-built.mjs && node scripts/launch-app.mjs",
     "lint": "eslint"
   },
   "dependencies": {

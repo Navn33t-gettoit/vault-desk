@@ -11,6 +11,10 @@ export type ServerVaultConfig = {
 };
 
 export async function getConfiguredVaultPath(): Promise<string> {
+  if (process.env.VAULT_PATH) {
+    return path.resolve(process.env.VAULT_PATH);
+  }
+
   try {
     const raw = await fs.readFile(CONFIG_FILE, "utf8");
     const parsed = JSON.parse(raw) as ServerVaultConfig;
@@ -18,7 +22,7 @@ export async function getConfiguredVaultPath(): Promise<string> {
       return path.resolve(parsed.vaultPath);
     }
   } catch {
-    // fall through to default
+    // fall through
   }
 
   return DEFAULT_VAULT_PATH;

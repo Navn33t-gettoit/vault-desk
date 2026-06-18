@@ -1,6 +1,6 @@
 import type { ScannedNote } from "@/lib/vault-scan-types";
 
-export const DEFAULT_VAULT_PATH = "/Users/navn33t/Desktop";
+export const DEFAULT_VAULT_PATH = "";
 export const VAULT_SCAN_STORAGE_KEY = "vault-desk-scan-config";
 
 export type VaultScanConfig = {

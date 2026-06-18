@@ -77,6 +77,7 @@ export function DashboardWorkspace({
     <>
       <VaultScanner
         initialPath={scanConfig?.vaultPath ?? initialVaultPath}
+        isConfigured={!!(scanConfig?.vaultPath ?? initialVaultPath)}
         onScanComplete={handleScanComplete}
       />
 
@@ -111,9 +112,11 @@ export function DashboardWorkspace({
         </p>
       )}
 
-      <p className="silence-meta silence-meta-faint mb-4">
-        Drag to reorder · drop onto a card to bundle into a sub-vault
-      </p>
+      {notes.length > 0 && (
+        <p className="silence-meta silence-meta-faint mb-4">
+          Drag to reorder · drop onto a card to bundle into a sub-vault
+        </p>
+      )}
 
       <DashboardGrid notes={filteredNotes} />
     </>

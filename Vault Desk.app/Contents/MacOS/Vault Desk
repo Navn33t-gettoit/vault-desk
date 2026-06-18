@@ -1,0 +1,7 @@
+#!/bin/bash
+ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
+mkdir -p "$ROOT/.vault-desk"
+echo "[$(date '+%H:%M:%S')] Vault Desk.app clicked" >>"$ROOT/.vault-desk/launch.log"
+export VAULT_DESK_ROOT="$ROOT"
+export VAULT_DESK_SILENT=1
+exec "$ROOT/scripts/macos-launch.sh"

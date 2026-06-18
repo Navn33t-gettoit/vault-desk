@@ -30,21 +30,24 @@ Choose between three distinct workspace styles:
 * **Contextual Typography Scaling** — Adjust workspace density and reading comfort instantly from the note editor.
 * **Live Reading Metrics** — Word count and reading time update in real time.
 
+---
+
 ### Launch the app
 
 **Requirements:** [Node.js 20+](https://nodejs.org)
 
 #### Option 1 — Double-click (easiest)
 
-| Platform | File |
-|---|---|
-| macOS | `Launch Vault Desk.command` |
-| Windows | `Launch Vault Desk.bat` |
-| Linux | `launch-vault-desk.sh` |
+| Platform | File | Notes |
+|---|---|---|
+| macOS | `Vault Desk.app` | **Recommended** — opens without Terminal |
+| macOS | `Launch Vault Desk.command` | Opens Terminal (useful for seeing logs) |
+| Windows | `Launch Vault Desk.bat` | |
+| Linux | `launch-vault-desk.sh` | |
 
 First launch installs dependencies and builds the app automatically (~1 minute). Later launches open the desktop window instantly.
 
-> **macOS:** If Gatekeeper blocks the launch file, right-click it → **Open** → **Open** once.
+> **macOS:** If Gatekeeper blocks the app, right-click it → **Open** → **Open** once.
 
 #### Option 2 — Terminal
 
@@ -64,13 +67,50 @@ npm run dev
 
 Then open [http://127.0.0.1:7423](http://127.0.0.1:7423).
 
+---
+
 ### First-time setup
 
 1. Launch Vault Desk using one of the methods above.
 2. On the dashboard, enter your Obsidian vault path (e.g. `/Users/you/Documents/MyVault`) and click **Scan vault**.
-3. Browse notes by topic tab, open a note to edit, and toggle themes from the global header.
+3. Your vault is scanned and notes appear grouped by topic. The path is saved — future launches go straight to your dashboard.
+4. Browse notes by topic tab, open a note to edit, and toggle themes from the global header.
 
-Scan results are saved in browser `localStorage`; the active vault path is persisted server-side in `.vault-desk/config.json` (gitignored) so note read/write uses your scanned directory.
+After the first scan, the vault path bar collapses to a compact one-liner. Click **Change** any time to point Vault Desk at a different vault.
+
+---
+
+### Changing the port
+
+Edit `app.config.cjs` in the project root:
+
+```js
+const APP_PORT = 7423; // ← change this if the port is taken
+```
+
+Then rebuild: `npm run build`. The new port takes effect on next launch.
+
+To expose Vault Desk on your local network (e.g. access from another device on the same Wi-Fi):
+
+```js
+const APP_HOST = "0.0.0.0";
+```
+
+---
+
+### Environment variables
+
+| Variable | Description |
+|---|---|
+| `VAULT_PATH` | Pre-set the vault path without going through the scan UI. Overrides any saved config. |
+
+Example:
+
+```bash
+VAULT_PATH=~/Documents/MyVault npm run app
+```
+
+---
 
 ### npm scripts
 
@@ -81,12 +121,16 @@ Scan results are saved in browser `localStorage`; the active vault path is persi
 | `npm run build` | Production build |
 | `npm run start` | Start production server (used internally by the desktop app) |
 
+---
+
 ### API
 
 | Endpoint | Method | Description |
 |---|---|---|
 | `/api/scan` | `POST` | Accepts `{ "vaultPath": "/path/to/vault" }`. Returns topics, note count, and a flat list of notes with `title`, `slug`, `topic`, and `relativePath`. |
 | `/api/save` | `POST` | Accepts `{ "slug", "content" }`. Writes edited markdown back to the configured vault on disk. |
+
+---
 
 ### Why I Built It
 

@@ -7,12 +7,14 @@ import type { VaultScanResult } from "@/lib/vault-scan-types";
 
 type VaultScannerProps = {
   initialPath?: string;
+  isConfigured?: boolean;
   onScanComplete: (config: VaultScanConfig) => void;
 };
 
 type ScanState = "idle" | "loading" | "error";
 
-export function VaultScanner({ initialPath, onScanComplete }: VaultScannerProps) {
+export function VaultScanner({ initialPath, isConfigured, onScanComplete }: VaultScannerProps) {
+  const [expanded, setExpanded] = useState(!isConfigured);
   const [vaultPath, setVaultPath] = useState(initialPath ?? DEFAULT_VAULT_PATH);
   const [state, setState] = useState<ScanState>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -45,22 +47,53 @@ export function VaultScanner({ initialPath, onScanComplete }: VaultScannerProps)
       saveVaultScanConfig(config);
       onScanComplete(config);
       setState("idle");
+      setExpanded(false);
     } catch (scanError) {
       setState("error");
       setError(scanError instanceof Error ? scanError.message : "Scan failed");
     }
   }
 
+  if (!expanded) {
+    return (
+      <div className="mb-[var(--silence-pad-section)] flex items-center justify-between gap-4">
+        <p className="silence-meta silence-meta-faint truncate">
+          Vault: <span className="silence-meta">{vaultPath}</span>
+        </p>
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="silence-meta silence-meta-faint shrink-0 underline underline-offset-2 hover:opacity-80 transition-opacity"
+        >
+          Change
+        </button>
+      </div>
+    );
+  }
+
   return (
     <section className="vault-scanner silence-surface soft-glow mb-[var(--silence-pad-section)]">
       <div className="mb-3 flex items-baseline justify-between gap-4">
         <div>
-          <p className="silence-meta mb-1">Initialization scan</p>
+          <p className="silence-meta mb-1">
+            {isConfigured ? "Change vault" : "Initialization scan"}
+          </p>
           <h2 className="silence-heading text-base tracking-wide">Vault path</h2>
         </div>
-        {state === "loading" && (
-          <span className="silence-meta silence-meta-faint">Scanning…</span>
-        )}
+        <div className="flex items-center gap-3">
+          {state === "loading" && (
+            <span className="silence-meta silence-meta-faint">Scanning…</span>
+          )}
+          {isConfigured && (
+            <button
+              type="button"
+              onClick={() => setExpanded(false)}
+              className="silence-meta silence-meta-faint hover:opacity-80 transition-opacity"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
