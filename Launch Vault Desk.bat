@@ -9,16 +9,15 @@ if errorlevel 1 (
   exit /b 1
 )
 
-where npm >nul 2>nul
-if errorlevel 1 (
-  echo npm is required. Install Node.js from https://nodejs.org
-  pause
-  exit /b 1
-)
-
 if not exist node_modules (
   echo Installing dependencies (first time only)...
   call npm install
 )
 
-call npm run app
+if not exist .next\BUILD_ID (
+  echo Building Vault Desk (first time, about a minute)...
+  call npm run build
+)
+
+start "" http://127.0.0.1:7423
+call npm run start

@@ -1,53 +1,50 @@
 # Vault Desk
 
-A local-first desktop interface for Obsidian Vaults.
+A local-first browser interface for Obsidian Vaults.
 
-Vault Desk provides a clean, distraction-free frontend for reading and writing Markdown notes while keeping your vault as the source of truth. Every edit made inside Vault Desk is written directly back to your raw `.md` files in real time.
+Vault Desk runs as a lightweight local server and opens in your browser. Every edit is written directly back to your raw `.md` files in real time. No cloud, no account, no Electron.
 
-**Home address:** [http://127.0.0.1:7423](http://127.0.0.1:7423) — always the same on every machine.
-
-### Privacy First
-
-Your vault stays on your machine.
-
-Vault Desk reads notes directly from your local filesystem and does not require a database, cloud sync service, or external account. Your notes, filenames, and personal data never leave your device.
-
-### Themes
-
-Choose between three distinct workspace styles:
-
-* **Midnight** — High-contrast dark workspace.
-* **Paper** — Warm, document-inspired reading experience.
-* **Imperial Datapad** — Monochrome terminal-inspired interface with a retro tactical aesthetic.
-
-### Features
-
-* **Desktop App** — Double-click to launch a native window. No terminal needed after setup. Always opens at [http://127.0.0.1:7423](http://127.0.0.1:7423).
-* **Initialization Scan** — Point Vault Desk at any local vault path; it discovers notes and groups them by top-level topic folders automatically. Loose root-level `.md` files are categorized under **Root**.
-* **Topic Navigation** — Filter the dashboard by major categories (`All`, `Root`, and each top-level folder) after scanning.
-* **Real-Time Bi-Directional Sync** — Changes are instantly reflected in your underlying Obsidian Markdown files.
-* **Visual Workspace Organization** — Drag and drop note cards to reorder and bundle notes into custom sub-vault layouts (UI-only; files on disk are never moved).
-* **Contextual Typography Scaling** — Adjust workspace density and reading comfort instantly from the note editor.
-* **Live Reading Metrics** — Word count and reading time update in real time.
+**Home address:** [http://127.0.0.1:7423](http://127.0.0.1:7423)
 
 ---
 
-### Launch the app
+### Privacy First
+
+Your vault stays on your machine. Vault Desk reads notes directly from your local filesystem — your notes, filenames, and personal data never leave your device.
+
+---
+
+### Themes
+
+* **Midnight** — High-contrast dark workspace.
+* **Paper** — Warm, document-inspired reading experience.
+* **Imperial Datapad** — Monochrome terminal-inspired interface.
+
+---
+
+### Features
+
+* **Permanent dashboard** — Runs as a login item; always at [http://127.0.0.1:7423](http://127.0.0.1:7423), no terminal needed.
+* **Sidebar navigation** — Topics listed with note counts, scrollable no matter how many folders you have.
+* **Search** — Filter notes by title within any topic.
+* **Drag to reorder** — Rearrange note cards however you like.
+* **Real-time editing** — Changes write back to disk instantly.
+* **Live reading metrics** — Word count and reading time in the editor.
+* **Three themes** — Switch from the header.
+
+---
+
+### Setup (macOS)
 
 **Requirements:** [Node.js 20+](https://nodejs.org)
 
-#### Option 1 — Double-click (easiest)
+#### Option 1 — Double-click
 
-| Platform | File | Notes |
-|---|---|---|
-| macOS | `Vault Desk.app` | **Recommended** — opens without Terminal |
-| macOS | `Launch Vault Desk.command` | Opens Terminal (useful for seeing logs) |
-| Windows | `Launch Vault Desk.bat` | |
-| Linux | `launch-vault-desk.sh` | |
+Double-click **`Launch Vault Desk.command`** in the project folder.
 
-First launch installs dependencies and builds the app automatically (~1 minute). Later launches open the desktop window instantly.
+This installs Vault Desk as a login item (runs on startup), builds it, and opens [http://127.0.0.1:7423](http://127.0.0.1:7423) in your browser. First run takes ~1 minute to build.
 
-> **macOS:** If Gatekeeper blocks the app, right-click it → **Open** → **Open** once.
+> If macOS blocks it: right-click → **Open** → **Open**.
 
 #### Option 2 — Terminal
 
@@ -55,45 +52,59 @@ First launch installs dependencies and builds the app automatically (~1 minute).
 git clone https://github.com/Navn33t-gettoit/vault-desk.git
 cd vault-desk
 npm install
-npm run app
+npm run setup
 ```
 
-#### Option 3 — Browser only (development)
+#### After setup
+
+Pin [http://127.0.0.1:7423](http://127.0.0.1:7423) as a tab in your browser. The server starts automatically every time you log in.
+
+To remove the login item:
 
 ```bash
-npm install
-npm run dev
+npm run uninstall
 ```
-
-Then open [http://127.0.0.1:7423](http://127.0.0.1:7423).
 
 ---
 
-### First-time setup
+### Windows / Linux
 
-1. Launch Vault Desk using one of the methods above.
-2. On the dashboard, enter your Obsidian vault path (e.g. `/Users/you/Documents/MyVault`) and click **Scan vault**.
-3. Your vault is scanned and notes appear grouped by topic. The path is saved — future launches go straight to your dashboard.
-4. Browse notes by topic tab, open a note to edit, and toggle themes from the global header.
+```bash
+npm install
+npm run build
+npm start
+```
 
-After the first scan, the vault path bar collapses to a compact one-liner. Click **Change** any time to point Vault Desk at a different vault.
+Then open [http://127.0.0.1:7423](http://127.0.0.1:7423). Add `npm start` to your startup items manually.
+
+**Windows:** double-click `Launch Vault Desk.bat` to build and start in one step.
+
+---
+
+### First-time use
+
+1. Open [http://127.0.0.1:7423](http://127.0.0.1:7423).
+2. Click **Browse…** (macOS) or type your Obsidian vault path and hit **Scan vault**.
+3. Your notes appear grouped by topic in the sidebar.
+4. Click a topic to filter, use the search bar to find notes by title, or click any card to open and edit.
+
+The vault path is saved — future launches go straight to your dashboard.
 
 ---
 
 ### Changing the port
 
-Edit `app.config.cjs` in the project root:
+Edit `app.config.cjs`:
 
 ```js
-const APP_PORT = 7423; // ← change this if the port is taken
+const APP_PORT = 7423; // ← change this
 ```
 
-Then rebuild: `npm run build`. The new port takes effect on next launch.
+Then rebuild and re-run setup:
 
-To expose Vault Desk on your local network (e.g. access from another device on the same Wi-Fi):
-
-```js
-const APP_HOST = "0.0.0.0";
+```bash
+npm run build
+npm run setup
 ```
 
 ---
@@ -102,13 +113,7 @@ const APP_HOST = "0.0.0.0";
 
 | Variable | Description |
 |---|---|
-| `VAULT_PATH` | Pre-set the vault path without going through the scan UI. Overrides any saved config. |
-
-Example:
-
-```bash
-VAULT_PATH=~/Documents/MyVault npm run app
-```
+| `VAULT_PATH` | Pre-set the vault path without going through the scan UI. |
 
 ---
 
@@ -116,10 +121,11 @@ VAULT_PATH=~/Documents/MyVault npm run app
 
 | Command | Description |
 |---|---|
-| `npm run app` | Build (if needed) and open the desktop app |
-| `npm run dev` | Development server at http://127.0.0.1:7423 |
+| `npm run setup` | Install as a login item and open in browser (macOS) |
+| `npm run uninstall` | Remove login item and stop server (macOS) |
+| `npm run dev` | Development server with hot reload |
 | `npm run build` | Production build |
-| `npm run start` | Start production server (used internally by the desktop app) |
+| `npm start` | Start production server |
 
 ---
 
@@ -127,13 +133,5 @@ VAULT_PATH=~/Documents/MyVault npm run app
 
 | Endpoint | Method | Description |
 |---|---|---|
-| `/api/scan` | `POST` | Accepts `{ "vaultPath": "/path/to/vault" }`. Returns topics, note count, and a flat list of notes with `title`, `slug`, `topic`, and `relativePath`. |
-| `/api/save` | `POST` | Accepts `{ "slug", "content" }`. Writes edited markdown back to the configured vault on disk. |
-
----
-
-### Why I Built It
-
-I love Obsidian because my notes are plain files that I fully own.
-
-Vault Desk started as an experiment to create a different way of interacting with those files without giving up the simplicity, portability, and privacy of a local Markdown vault.
+| `/api/scan` | `POST` | `{ "vaultPath": "/path" }` — scans vault, returns topics and notes |
+| `/api/save` | `POST` | `{ "slug", "content" }` — writes markdown back to disk |

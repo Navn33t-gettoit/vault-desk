@@ -2,17 +2,15 @@
   "name": "vault-desk",
   "version": "0.1.0",
   "private": true,
-  "main": "electron/main.cjs",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -H 127.0.0.1 -p 7423 --webpack",
-    "dev:clean": "rm -rf .next/dev && npm run dev",
+    "dev": "next dev -H 127.0.0.1 -p 7423",
     "build": "next build",
-    "start": "node scripts/start-server.mjs",
-    "start:prod": "npm run build && npm run start",
-    "app": "node scripts/ensure-built.mjs && node scripts/launch-app.mjs",
+    "start": "next start -H 127.0.0.1 -p 7423",
+    "setup": "bash scripts/install-agent.sh",
+    "uninstall": "bash scripts/uninstall-agent.sh",
     "lint": "eslint"
   },
   "dependencies": {
@@ -29,7 +27,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "electron": "^35.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
