@@ -8,7 +8,6 @@ import {
   KeyboardSensor,
   PointerSensor,
   closestCenter,
-  useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -19,19 +18,12 @@ import {
   sortableKeyboardCoordinates,
   useSortable,
   rectSortingStrategy,
-  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   type DashboardLayout,
-  type LayoutFolder,
-  type LayoutNode,
-  flattenNodeIds,
-  folderNodeId,
   loadDashboardLayout,
   mergeLayoutWithNotes,
-  nestNodeInto,
-  nestTargetId,
   noteNodeId,
   reorderInLayout,
   saveDashboardLayout,
@@ -41,57 +33,43 @@ import {
   displayTitle,
   formatUpdatedAt,
   noteHref,
-  parentContext,
 } from "@/lib/note-display";
+import { ROOT_TOPIC } from "@/lib/vault-scan-types";
 
 type DashboardGridProps = {
   notes: DashboardNote[];
+  showTopic?: boolean;
 };
 
-type SortableNodeProps = {
-  node: LayoutNode;
-  noteMap: Map<string, DashboardNote>;
-  depth?: number;
-};
-
-function combineRefs<T>(...refs: Array<(node: T | null) => void>) {
-  return (node: T | null) => {
-    refs.forEach((ref) => ref(node));
-  };
-}
-
-function NoteCardContent({
-  slug,
+function NoteCard({
   note,
+  showTopic,
   isDragging,
-  isNestTarget,
 }: {
-  slug: string;
-  note?: DashboardNote;
+  note: DashboardNote;
+  showTopic: boolean;
   isDragging?: boolean;
-  isNestTarget?: boolean;
 }) {
+  const title = note.title ?? displayTitle(note.slug);
+  const topic = showTopic && note.topic && note.topic !== ROOT_TOPIC ? note.topic : null;
+
   return (
     <article
       className={[
-        "silence-surface soft-glow h-full transition-all duration-200",
+        "silence-surface soft-glow h-full flex flex-col justify-between transition-all duration-200",
         isDragging ? "dashboard-dnd-dragging" : "hover:opacity-95",
-        isNestTarget ? "dashboard-dnd-nest-target" : "",
       ]
         .filter(Boolean)
         .join(" ")}
     >
-      {parentContext(slug) && (
-        <p className="silence-meta silence-meta-faint mb-2">{parentContext(slug)}</p>
-      )}
-      {note?.topic && note.topic !== "Root" && (
-        <p className="silence-meta silence-meta-faint mb-2">{note.topic}</p>
-      )}
-      <h2 className="silence-heading text-base tracking-wide">
-        {note?.title ?? displayTitle(slug)}
-      </h2>
-      {note && (
-        <p className="silence-meta mt-4">{formatUpdatedAt(note.updatedAt)}</p>
+      <div>
+        {topic && (
+          <p className="silence-meta silence-meta-faint mb-3">{topic}</p>
+        )}
+        <h2 className="silence-heading text-base tracking-wide leading-snug">{title}</h2>
+      </div>
+      {note.updatedAt && (
+        <p className="silence-meta silence-meta-faint mt-4">{formatUpdatedAt(note.updatedAt)}</p>
       )}
     </article>
   );
@@ -100,184 +78,41 @@ function NoteCardContent({
 function SortableNoteCard({
   slug,
   noteMap,
-  depth = 0,
+  showTopic,
 }: {
   slug: string;
   noteMap: Map<string, DashboardNote>;
-  depth?: number;
+  showTopic: boolean;
 }) {
   const id = noteNodeId(slug);
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-  const { setNodeRef: setNestRef, isOver } = useDroppable({
-    id: nestTargetId(id),
-    data: { type: "nest", nodeId: id },
-  });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  const note = noteMap.get(slug);
+  const style = { transform: CSS.Transform.toString(transform), transition };
+  const note = noteMap.get(slug) ?? { slug, updatedAt: "" };
 
   return (
     <li
-      ref={combineRefs(setNodeRef, setNestRef)}
+      ref={setNodeRef}
       style={style}
-      className={[
-        "list-none",
-        depth > 0 ? "dashboard-dnd-nested-item" : "",
-        isDragging ? "dashboard-dnd-source-hidden" : "",
-      ]
+      className={["list-none", isDragging ? "dashboard-dnd-source-hidden" : ""]
         .filter(Boolean)
         .join(" ")}
     >
-      <div
-        className="dashboard-dnd-card relative h-full"
-        {...attributes}
-        {...listeners}
-      >
+      <div className="dashboard-dnd-card h-full" {...attributes} {...listeners}>
         <Link href={noteHref(slug)} prefetch={false} className="block h-full" draggable={false}>
-          <NoteCardContent
-            slug={slug}
-            note={note}
-            isDragging={isDragging}
-            isNestTarget={isOver && !isDragging}
-          />
+          <NoteCard note={note} showTopic={showTopic} isDragging={isDragging} />
         </Link>
       </div>
     </li>
   );
 }
 
-function SortableFolderCard({
-  folder,
-  noteMap,
-  depth = 0,
-}: {
-  folder: LayoutFolder;
-  noteMap: Map<string, DashboardNote>;
-  depth?: number;
-}) {
-  const id = folderNodeId(folder.id);
-  const childIds = flattenNodeIds(folder.children);
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-  const { setNodeRef: setNestRef, isOver } = useDroppable({
-    id: nestTargetId(id),
-    data: { type: "nest", nodeId: id },
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <li
-      ref={combineRefs(setNodeRef, setNestRef)}
-      style={style}
-      className={[
-        "list-none",
-        depth > 0 ? "dashboard-dnd-nested-item" : "",
-        isDragging ? "dashboard-dnd-source-hidden" : "",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <div
-        className={[
-          "dashboard-folder dashboard-dnd-card silence-surface soft-glow h-full transition-all duration-200",
-          isOver && !isDragging ? "dashboard-dnd-nest-target" : "",
-          isDragging ? "dashboard-dnd-dragging" : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        {...attributes}
-        {...listeners}
-      >
-        <div className="mb-4">
-          <p className="silence-meta silence-meta-faint mb-1">Sub-vault</p>
-          <h2 className="silence-heading text-base tracking-wide">{folder.name}</h2>
-        </div>
-        <SortableContext items={childIds} strategy={verticalListSortingStrategy}>
-          <ul className="dashboard-folder-children">
-            {folder.children.map((child) => (
-              <SortableLayoutNode
-                key={child.kind === "note" ? noteNodeId(child.slug) : folderNodeId(child.id)}
-                node={child}
-                noteMap={noteMap}
-                depth={depth + 1}
-              />
-            ))}
-          </ul>
-        </SortableContext>
-      </div>
-    </li>
-  );
-}
-
-function SortableLayoutNode({ node, noteMap, depth = 0 }: SortableNodeProps) {
-  if (node.kind === "note") {
-    return <SortableNoteCard slug={node.slug} noteMap={noteMap} depth={depth} />;
-  }
-  return <SortableFolderCard folder={node} noteMap={noteMap} depth={depth} />;
-}
-
-function DragPreview({
-  node,
-  noteMap,
-}: {
-  node: LayoutNode;
-  noteMap: Map<string, DashboardNote>;
-}) {
-  if (node.kind === "note") {
-    return (
-      <div className="dashboard-dnd-overlay">
-        <NoteCardContent slug={node.slug} note={noteMap.get(node.slug)} />
-      </div>
-    );
-  }
-
-  return (
-    <div className="dashboard-dnd-overlay dashboard-folder silence-surface soft-glow p-4">
-      <p className="silence-meta silence-meta-faint mb-1">Sub-vault</p>
-      <h2 className="silence-heading text-base tracking-wide">{node.name}</h2>
-      <p className="silence-meta mt-2">{node.children.length} item(s)</p>
-    </div>
-  );
-}
-
-function findNode(nodes: LayoutNode[], nodeId: string): LayoutNode | null {
-  for (const node of nodes) {
-    if (node.kind === "note" && nodeId === noteNodeId(node.slug)) return node;
-    if (node.kind === "folder") {
-      if (nodeId === folderNodeId(node.id)) return node;
-      const nested = findNode(node.children, nodeId);
-      if (nested) return nested;
-    }
-  }
-  return null;
-}
-
-export function DashboardGrid({ notes }: DashboardGridProps) {
+export function DashboardGrid({ notes, showTopic = true }: DashboardGridProps) {
   const [layout, setLayout] = useState<DashboardLayout>(() =>
     mergeLayoutWithNotes(null, notes),
   );
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   const noteMap = useMemo(
@@ -285,13 +120,15 @@ export function DashboardGrid({ notes }: DashboardGridProps) {
     [notes],
   );
 
-  const rootIds = useMemo(
+  const noteSlugs = useMemo(
     () =>
-      layout.nodes.map((node) =>
-        node.kind === "note" ? noteNodeId(node.slug) : folderNodeId(node.id),
-      ),
+      layout.nodes
+        .filter((n) => n.kind === "note")
+        .map((n) => (n.kind === "note" ? n.slug : "")),
     [layout.nodes],
   );
+
+  const rootIds = useMemo(() => noteSlugs.map(noteNodeId), [noteSlugs]);
 
   useEffect(() => {
     const saved = loadDashboardLayout();
@@ -310,42 +147,28 @@ export function DashboardGrid({ notes }: DashboardGridProps) {
   );
 
   function handleDragStart(event: DragStartEvent) {
-    setActiveId(String(event.active.id));
+    const id = String(event.active.id);
+    if (id.startsWith("note:")) setActiveSlug(id.slice(5));
   }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    setActiveId(null);
-    if (!over) return;
-
-    const activeNodeId = String(active.id);
-    const overId = String(over.id);
-
-    if (overId.startsWith("nest:")) {
-      const targetNodeId = overId.slice(5);
-      if (activeNodeId !== targetNodeId) {
-        setLayout((current) => nestNodeInto(current, activeNodeId, targetNodeId));
-      }
-      return;
-    }
-
-    if (
-      (overId.startsWith("note:") || overId.startsWith("folder:")) &&
-      activeNodeId !== overId
-    ) {
-      setLayout((current) => reorderInLayout(current, activeNodeId, overId));
-    }
+    setActiveSlug(null);
+    if (!over || active.id === over.id) return;
+    setLayout((current) =>
+      reorderInLayout(current, String(active.id), String(over.id)),
+    );
   }
-
-  const activeNode = activeId ? findNode(layout.nodes, activeId) : null;
 
   if (notes.length === 0) {
     return (
-      <p className="silence-meta py-[var(--silence-pad-page)] text-center">
-        No notes found. Run an initialization scan above or check your vault path.
+      <p className="silence-meta silence-meta-faint py-12 text-center">
+        No notes found. Try a different search or topic.
       </p>
     );
   }
+
+  const activeNote = activeSlug ? noteMap.get(activeSlug) : null;
 
   return (
     <DndContext
@@ -356,18 +179,23 @@ export function DashboardGrid({ notes }: DashboardGridProps) {
     >
       <SortableContext items={rootIds} strategy={rectSortingStrategy}>
         <ul className="dashboard-dnd-grid">
-          {layout.nodes.map((node) => (
-            <SortableLayoutNode
-              key={node.kind === "note" ? noteNodeId(node.slug) : folderNodeId(node.id)}
-              node={node}
+          {noteSlugs.map((slug) => (
+            <SortableNoteCard
+              key={slug}
+              slug={slug}
               noteMap={noteMap}
+              showTopic={showTopic}
             />
           ))}
         </ul>
       </SortableContext>
 
-      <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
-        {activeNode ? <DragPreview node={activeNode} noteMap={noteMap} /> : null}
+      <DragOverlay dropAnimation={{ duration: 200, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
+        {activeNote ? (
+          <div className="dashboard-dnd-overlay">
+            <NoteCard note={activeNote} showTopic={showTopic} isDragging />
+          </div>
+        ) : null}
       </DragOverlay>
     </DndContext>
   );

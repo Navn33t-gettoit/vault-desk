@@ -417,9 +417,116 @@ body {
   margin: 0;
 }
 
-.dashboard-dnd-nested-item article,
-.dashboard-dnd-nested-item .dashboard-folder {
-  border-style: dashed;
+/* ——— Dashboard page layout ——— */
+.vault-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.vault-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.vault-sidebar {
+  width: 13rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--silence-pad-page) var(--silence-pad-inline) var(--silence-pad-page) var(--silence-pad-page);
+  border-right: 1px solid var(--silence-border);
+  position: sticky;
+  top: 2.75rem;
+  max-height: calc(100vh - 2.75rem);
+  overflow-y: auto;
+}
+
+.vault-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--silence-pad-page);
+  display: flex;
+  flex-direction: column;
+  gap: var(--silence-pad-section);
+}
+
+.vault-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.vault-sidebar-divider {
+  height: 1px;
+  background: var(--silence-border);
+  margin: 0.625rem 0;
+}
+
+.vault-sidebar-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border-radius: 2px;
+  font-family: var(--silence-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--silence-text-faint);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s ease, background 0.15s ease;
+  border: none;
+}
+
+.vault-sidebar-item:hover {
+  color: var(--silence-text-muted);
+  background: var(--silence-border);
+}
+
+.vault-sidebar-item-active {
+  color: var(--silence-text);
+  background: var(--silence-border);
+}
+
+.vault-sidebar-count {
+  font-size: 0.625rem;
+  color: inherit;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* ——— Search bar ——— */
+.vault-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vault-search-input {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid var(--silence-border);
+  background: transparent;
+  color: var(--silence-text-body);
+  font-family: var(--silence-font-mono);
+  font-size: 0.8125rem;
+  padding: 0.5rem 0;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.vault-search-input:focus {
+  border-color: var(--silence-accent);
+}
+
+.vault-search-input::placeholder {
+  color: var(--silence-text-faint);
 }
 
 /* ——— Vault scanner ——— */
@@ -446,14 +553,3 @@ body {
   cursor: not-allowed;
 }
 
-/* ——— Topic navigation tabs ——— */
-.topic-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.topic-tab-active {
-  color: var(--silence-text);
-  border-color: var(--silence-accent);
-}

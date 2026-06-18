@@ -1,4 +1,3 @@
-import { DashboardHeader } from "@/components/DashboardHeader";
 import { DashboardWorkspace } from "@/components/DashboardWorkspace";
 import { getConfiguredVaultPath } from "@/lib/vault-config.server";
 import { deriveTopic } from "@/lib/vault-scan-types";
@@ -23,15 +22,11 @@ export default async function Home() {
   }));
 
   return (
-    <main className="silence-page min-h-full">
-      <DashboardHeader />
-
-      <section className="silence-section pt-[var(--silence-pad-section)]">
-        <DashboardWorkspace
-          initialNotes={serializedNotes}
-          initialVaultPath={vaultPath}
-        />
-      </section>
+    <main className="vault-page min-h-full">
+      <DashboardWorkspace
+        initialNotes={serializedNotes}
+        initialVaultPath={vaultPath}
+      />
     </main>
   );
 }
