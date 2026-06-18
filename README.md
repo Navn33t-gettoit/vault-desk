@@ -4,6 +4,8 @@ A local-first desktop interface for Obsidian Vaults.
 
 Vault Desk provides a clean, distraction-free frontend for reading and writing Markdown notes while keeping your vault as the source of truth. Every edit made inside Vault Desk is written directly back to your raw `.md` files in real time.
 
+**Home address:** [http://127.0.0.1:7423](http://127.0.0.1:7423) — always the same on every machine.
+
 ### Privacy First
 
 Your vault stays on your machine.
@@ -20,6 +22,7 @@ Choose between three distinct workspace styles:
 
 ### Features
 
+* **Desktop App** — Double-click to launch a native window. No terminal needed after setup. Always opens at [http://127.0.0.1:7423](http://127.0.0.1:7423).
 * **Initialization Scan** — Point Vault Desk at any local vault path; it discovers notes and groups them by top-level topic folders automatically. Loose root-level `.md` files are categorized under **Root**.
 * **Topic Navigation** — Filter the dashboard by major categories (`All`, `Root`, and each top-level folder) after scanning.
 * **Real-Time Bi-Directional Sync** — Changes are instantly reflected in your underlying Obsidian Markdown files.
@@ -27,15 +30,56 @@ Choose between three distinct workspace styles:
 * **Contextual Typography Scaling** — Adjust workspace density and reading comfort instantly from the note editor.
 * **Live Reading Metrics** — Word count and reading time update in real time.
 
-### Getting Started
+### Launch the app
 
-1. Clone this repository.
-2. Run `npm install`.
-3. Start the app with `npm run dev` and open the local URL shown in your terminal.
-4. On the dashboard, enter your Obsidian vault path (e.g. `/Users/you/Documents/MyVault`) and click **Scan vault**.
-5. Browse notes by topic tab, open a note to edit, and toggle themes from the global header.
+**Requirements:** [Node.js 20+](https://nodejs.org)
+
+#### Option 1 — Double-click (easiest)
+
+| Platform | File |
+|---|---|
+| macOS | `Launch Vault Desk.command` |
+| Windows | `Launch Vault Desk.bat` |
+| Linux | `launch-vault-desk.sh` |
+
+First launch installs dependencies and builds the app automatically (~1 minute). Later launches open the desktop window instantly.
+
+> **macOS:** If Gatekeeper blocks the launch file, right-click it → **Open** → **Open** once.
+
+#### Option 2 — Terminal
+
+```bash
+git clone https://github.com/Navn33t-gettoit/vault-desk.git
+cd vault-desk
+npm install
+npm run app
+```
+
+#### Option 3 — Browser only (development)
+
+```bash
+npm install
+npm run dev
+```
+
+Then open [http://127.0.0.1:7423](http://127.0.0.1:7423).
+
+### First-time setup
+
+1. Launch Vault Desk using one of the methods above.
+2. On the dashboard, enter your Obsidian vault path (e.g. `/Users/you/Documents/MyVault`) and click **Scan vault**.
+3. Browse notes by topic tab, open a note to edit, and toggle themes from the global header.
 
 Scan results are saved in browser `localStorage`; the active vault path is persisted server-side in `.vault-desk/config.json` (gitignored) so note read/write uses your scanned directory.
+
+### npm scripts
+
+| Command | Description |
+|---|---|
+| `npm run app` | Build (if needed) and open the desktop app |
+| `npm run dev` | Development server at http://127.0.0.1:7423 |
+| `npm run build` | Production build |
+| `npm run start` | Start production server (used internally by the desktop app) |
 
 ### API
 
