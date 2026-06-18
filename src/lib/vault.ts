@@ -87,21 +87,12 @@ async function scanDirectory(
 
 export async function getLatestNotes(): Promise<VaultNote[]> {
   const vaultRoot = await getVaultRoot();
-  console.log("Searching vault path:", vaultRoot);
+  if (!vaultRoot) return [];
 
   try {
-    const rootItems = await fs.readdir(vaultRoot);
-    console.log("All items in root:", rootItems);
-
     const notes = await scanDirectory(vaultRoot);
-    const sorted = notes.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-
-    console.log(`[vault] Found ${sorted.length} markdown file(s)`);
-    return sorted;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("[vault] Failed to read vault directory:", message);
-    console.error("[vault] Full error:", error);
+    return notes.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+  } catch {
     return [];
   }
 }
