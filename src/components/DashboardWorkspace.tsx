@@ -25,6 +25,7 @@ function scannedNotesToDashboard(notes: VaultScanConfig["notes"]): DashboardNote
     title: note.title,
     topic: note.topic,
     relativePath: note.relativePath,
+    preview: note.preview,
   }));
 }
 

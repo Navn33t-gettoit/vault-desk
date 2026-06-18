@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Minimal reading surface for your Obsidian vault",
 };
 
-const themeBootScript = `(function(){try{var tk=${JSON.stringify(THEME_STORAGE_KEY)};var sk=${JSON.stringify(TEXT_SIZE_STORAGE_KEY)};var t=localStorage.getItem(tk);if(t==='midnight'||t==='paper'||t==='datapad'){document.documentElement.setAttribute('data-theme',t);}var s=localStorage.getItem(sk);if(s==='medium'||s==='large'){document.documentElement.setAttribute('data-text-size',s);}}catch(e){}})();`;
+const themeBootScript = `(function(){try{var tk=${JSON.stringify(THEME_STORAGE_KEY)};var sk=${JSON.stringify(TEXT_SIZE_STORAGE_KEY)};var valid=['midnight','paper','datapad','rosepine','nord'];var t=localStorage.getItem(tk);if(t&&valid.includes(t)){document.documentElement.setAttribute('data-theme',t);}var s=localStorage.getItem(sk);if(s==='medium'||s==='large'){document.documentElement.setAttribute('data-text-size',s);}}catch(e){}})();`;
 
 export default function RootLayout({
   children,

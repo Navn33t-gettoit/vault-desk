@@ -36,6 +36,12 @@ import {
 } from "@/lib/note-display";
 import { ROOT_TOPIC } from "@/lib/vault-scan-types";
 
+function topicHue(topic: string): number {
+  let h = 0;
+  for (let i = 0; i < topic.length; i++) h = (h * 31 + topic.charCodeAt(i)) & 0xffff;
+  return h % 360;
+}
+
 type DashboardGridProps = {
   notes: DashboardNote[];
   showTopic?: boolean;
@@ -51,7 +57,10 @@ function NoteCard({
   isDragging?: boolean;
 }) {
   const title = note.title ?? displayTitle(note.slug);
-  const topic = showTopic && note.topic && note.topic !== ROOT_TOPIC ? note.topic : null;
+  const topic = note.topic && note.topic !== ROOT_TOPIC ? note.topic : null;
+  const borderColor = topic
+    ? `hsl(${topicHue(topic)}, 45%, 55%)`
+    : "transparent";
 
   return (
     <article
@@ -61,12 +70,18 @@ function NoteCard({
       ]
         .filter(Boolean)
         .join(" ")}
+      style={{ borderLeft: `3px solid ${borderColor}` }}
     >
       <div>
-        {topic && (
-          <p className="silence-meta silence-meta-faint mb-3">{topic}</p>
+        {showTopic && topic && (
+          <p className="silence-meta silence-meta-faint mb-2">{topic}</p>
         )}
-        <h2 className="silence-heading text-base tracking-wide leading-snug">{title}</h2>
+        <h2 className="dashboard-card-title mb-2">{title}</h2>
+        {note.preview && (
+          <p className="silence-meta silence-meta-faint leading-relaxed line-clamp-2">
+            {note.preview}
+          </p>
+        )}
       </div>
       {note.updatedAt && (
         <p className="silence-meta silence-meta-faint mt-4">{formatUpdatedAt(note.updatedAt)}</p>

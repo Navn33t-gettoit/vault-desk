@@ -126,6 +126,8 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
               setSaveState("idle");
               setContent(event.target.value);
             }}
+            onFocus={() => document.body.classList.add("writing-mode")}
+            onBlur={() => document.body.classList.remove("writing-mode")}
             spellCheck={false}
             aria-label="Note content"
             aria-busy={saveState === "saving"}

@@ -90,6 +90,48 @@
   --silence-font-mono: var(--font-geist-mono), "Courier New", monospace;
 }
 
+[data-theme="rosepine"] {
+  color-scheme: dark;
+
+  /* Rosé Pine · muted dawn, warm rose accent */
+  --silence-bg: #191724;
+  --silence-surface: #1f1d2e;
+  --silence-text: #e0def4;
+  --silence-text-body: #c5c3d9;
+  --silence-text-muted: #908caa;
+  --silence-text-faint: #6e6a86;
+  --silence-accent: #eb6f92;
+  --silence-border: rgb(224 222 244 / 0.08);
+  --silence-glow: rgb(235 111 146 / 0.06);
+  --silence-glow-hover: rgb(235 111 146 / 0.12);
+  --silence-glow-blur: 28px;
+  --silence-caret: #eb6f92;
+  --silence-code-bg: #26233a;
+  --silence-font-body: var(--font-geist-sans), system-ui, sans-serif;
+  --silence-font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+[data-theme="nord"] {
+  color-scheme: dark;
+
+  /* Nord · arctic canvas, frost blue accent */
+  --silence-bg: #2e3440;
+  --silence-surface: #3b4252;
+  --silence-text: #eceff4;
+  --silence-text-body: #d8dee9;
+  --silence-text-muted: #7b88a1;
+  --silence-text-faint: #4c566a;
+  --silence-accent: #88c0d0;
+  --silence-border: rgb(236 239 244 / 0.08);
+  --silence-glow: rgb(136 192 208 / 0.06);
+  --silence-glow-hover: rgb(136 192 208 / 0.12);
+  --silence-glow-blur: 24px;
+  --silence-caret: #88c0d0;
+  --silence-code-bg: #2e3440;
+  --silence-font-body: var(--font-geist-sans), system-ui, sans-serif;
+  --silence-font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -204,8 +246,19 @@ body {
 
 .silence-heading {
   color: var(--silence-text);
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  font-family: var(--silence-font-body);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Card titles use proportional body font — only mono for meta/labels */
+.dashboard-card-title {
+  font-family: var(--silence-font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  color: var(--silence-text);
 }
 
 .silence-body {
@@ -227,6 +280,7 @@ body {
   font-family: var(--silence-font-mono);
   font-size: var(--silence-read-size);
   line-height: var(--silence-read-leading);
+  max-width: 72ch;
   transition: font-size 0.2s ease, line-height 0.2s ease;
 }
 
@@ -247,6 +301,7 @@ body {
 
 /* ——— Note prose ——— */
 .silence-prose {
+  max-width: 72ch;
   font-size: var(--silence-read-size);
   line-height: var(--silence-read-leading);
   color: var(--silence-text-body);
@@ -417,6 +472,27 @@ body {
   margin: 0;
 }
 
+/* ——— Page transitions ——— */
+@keyframes vd-fade-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.vault-page,
+.silence-page.note-view {
+  animation: vd-fade-in 0.18s ease both;
+}
+
+/* ——— Focus / writing mode ——— */
+body.writing-mode .silence-app-header {
+  opacity: 0.2;
+  transition: opacity 0.35s ease;
+}
+
+.silence-app-header {
+  transition: opacity 0.35s ease;
+}
+
 /* ——— Dashboard page layout ——— */
 .vault-page {
   display: flex;
@@ -437,6 +513,7 @@ body {
   flex-direction: column;
   gap: 0;
   padding: var(--silence-pad-page) var(--silence-pad-inline) var(--silence-pad-page) var(--silence-pad-page);
+  background: var(--silence-surface);
   border-right: 1px solid var(--silence-border);
   position: sticky;
   top: 2.75rem;

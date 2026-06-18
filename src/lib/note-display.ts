@@ -4,6 +4,7 @@ export type DashboardNote = {
   title?: string;
   topic?: string;
   relativePath?: string;
+  preview?: string;
 };
 
 export function noteHref(slug: string): string {

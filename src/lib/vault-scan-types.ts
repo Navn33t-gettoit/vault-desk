@@ -6,6 +6,7 @@ export type ScannedNote = {
   topic: string;
   relativePath: string;
   updatedAt: string;
+  preview?: string;
 };
 
 export type VaultScanResult = {

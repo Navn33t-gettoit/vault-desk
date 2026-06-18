@@ -21,12 +21,46 @@ function shouldSkipEntry(name: string, isDirectory: boolean): boolean {
   return false;
 }
 
+async function extractPreview(filePath: string): Promise<string> {
+  try {
+    const content = await fs.readFile(filePath, "utf8");
+    const lines = content.split("\n");
+    let inFrontmatter = false;
+    let frontmatterSeen = false;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!frontmatterSeen && trimmed === "---") {
+        inFrontmatter = true;
+        frontmatterSeen = true;
+        continue;
+      }
+      if (inFrontmatter) {
+        if (trimmed === "---") inFrontmatter = false;
+        continue;
+      }
+      if (!trimmed || trimmed.startsWith("#") || /^[-*]{3,}$/.test(trimmed)) continue;
+
+      const clean = trimmed
+        .replace(/!\[.*?\]\(.*?\)/g, "")
+        .replace(/\[([^\]]+)\]\(.*?\)/g, "$1")
+        .replace(/[*_`~]+/g, "")
+        .replace(/^[-*+>]\s+/, "")
+        .replace(/^\d+\.\s+/, "")
+        .trim();
+
+      if (clean.length > 12) {
+        return clean.length > 120 ? `${clean.slice(0, 120)}…` : clean;
+      }
+    }
+  } catch {}
+  return "";
+}
+
 export function validateVaultPath(vaultPath: string): string | null {
   if (!vaultPath || typeof vaultPath !== "string") return null;
-
   const resolved = path.resolve(vaultPath.trim());
   if (resolved.includes("..")) return null;
-
   return resolved;
 }
 
@@ -34,15 +68,11 @@ export async function assertVaultDirectory(
   vaultPath: string,
 ): Promise<{ ok: true; path: string } | { ok: false; error: string }> {
   const resolved = validateVaultPath(vaultPath);
-  if (!resolved) {
-    return { ok: false, error: "Invalid vault path" };
-  }
+  if (!resolved) return { ok: false, error: "Invalid vault path" };
 
   try {
     const stat = await fs.stat(resolved);
-    if (!stat.isDirectory()) {
-      return { ok: false, error: "Path is not a directory" };
-    }
+    if (!stat.isDirectory()) return { ok: false, error: "Path is not a directory" };
   } catch {
     return { ok: false, error: "Vault directory not found or not readable" };
   }
@@ -85,6 +115,7 @@ async function scanDirectory(
 
     const topic = deriveTopic(relativePath);
     const slug = relativePath.replace(/\.md$/i, "");
+    const preview = await extractPreview(absolutePath);
 
     found.push({
       title: titleFromRelativePath(relativePath),
@@ -92,6 +123,7 @@ async function scanDirectory(
       topic,
       relativePath,
       updatedAt: stat.mtime.toISOString(),
+      preview,
     });
   }
 
@@ -100,18 +132,14 @@ async function scanDirectory(
 
 export async function scanVault(vaultPath: string): Promise<VaultScanResult> {
   const validation = await assertVaultDirectory(vaultPath);
-  if (!validation.ok) {
-    throw new Error(validation.error);
-  }
+  if (!validation.ok) throw new Error(validation.error);
 
   const notes = await scanDirectory(validation.path);
   notes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
-  const topics = sortTopics(notes.map((note) => note.topic));
-
   return {
     success: true,
-    topics,
+    topics: sortTopics(notes.map((n) => n.topic)),
     notesCount: notes.length,
     notes,
   };
