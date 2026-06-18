@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
 const path = require("path");
 const { APP_URL } = require("../app.config.cjs");
 
@@ -26,8 +26,17 @@ async function ensureServer() {
   await waitForServer();
 }
 
+ipcMain.handle("select-folder", async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select your Obsidian vault folder",
+  });
+  return result.canceled ? null : result.filePaths[0];
+});
+
 async function createWindow() {
   const iconPath = path.join(__dirname, "..", "public", "icon.png");
+  const preloadPath = path.join(__dirname, "preload.cjs");
 
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -41,7 +50,8 @@ async function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,
+      preload: preloadPath,
     },
   });
 

@@ -5,6 +5,12 @@ import type { VaultScanConfig } from "@/lib/vault-config";
 import { DEFAULT_VAULT_PATH, saveVaultScanConfig } from "@/lib/vault-config";
 import type { VaultScanResult } from "@/lib/vault-scan-types";
 
+declare global {
+  interface Window {
+    electronAPI?: { selectFolder: () => Promise<string | null> };
+  }
+}
+
 type VaultScannerProps = {
   initialPath?: string;
   isConfigured?: boolean;
@@ -18,6 +24,12 @@ export function VaultScanner({ initialPath, isConfigured, onScanComplete }: Vaul
   const [vaultPath, setVaultPath] = useState(initialPath ?? DEFAULT_VAULT_PATH);
   const [state, setState] = useState<ScanState>("idle");
   const [error, setError] = useState<string | null>(null);
+  const isElectron = typeof window !== "undefined" && !!window.electronAPI;
+
+  async function handleBrowse() {
+    const selected = await window.electronAPI?.selectFolder();
+    if (selected) setVaultPath(selected);
+  }
 
   async function handleScan() {
     setState("loading");
@@ -106,6 +118,16 @@ export function VaultScanner({ initialPath, isConfigured, onScanComplete }: Vaul
           aria-label="Local vault directory path"
           disabled={state === "loading"}
         />
+        {isElectron && (
+          <button
+            type="button"
+            onClick={() => void handleBrowse()}
+            className="silence-chip shrink-0 px-4 py-2 sm:py-0"
+            disabled={state === "loading"}
+          >
+            Browse…
+          </button>
+        )}
         <button
           type="button"
           onClick={() => void handleScan()}
