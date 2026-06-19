@@ -11,6 +11,7 @@
     "start": "next start -H 127.0.0.1 -p 7423",
     "setup": "bash scripts/install-agent.sh",
     "uninstall": "bash scripts/uninstall-agent.sh",
+    "rebuild": "bash scripts/rebuild-agent.sh",
     "lint": "eslint"
   },
   "dependencies": {

@@ -110,7 +110,7 @@ Then open [http://127.0.0.1:7423](http://127.0.0.1:7423). Add `npm start` to you
 ### First-time use
 
 1. Open [http://127.0.0.1:7423](http://127.0.0.1:7423).
-2. Click **Browse…** (macOS) or type your Obsidian vault path and hit **Scan vault**.
+2. Type your Obsidian vault path and hit **Scan vault**.
 3. Your notes appear grouped by topic in the sidebar.
 4. Click a topic to filter, use the search bar to find notes by title, or click any card to open and edit.
 
@@ -130,12 +130,23 @@ Edit `app.config.cjs`:
 const APP_PORT = 7423; // ← change this
 ```
 
-Then rebuild and re-run setup:
+Then rebuild:
 
 ```bash
-npm run build
-npm run setup
+npm run rebuild
 ```
+
+---
+
+### Updating after a code change
+
+The Login Agent keeps running the build it was started with. If you edit any code (or pull a new version), rebuild and restart it in one step:
+
+```bash
+npm run rebuild
+```
+
+Running `npm run build` alone while the agent is still live serving the old build can cause asset mismatches (broken links, pages that won't load) — `npm run rebuild` avoids that by restarting the agent right after the build finishes.
 
 ---
 
@@ -152,9 +163,10 @@ npm run setup
 | Command | Description |
 |---|---|
 | `npm run setup` | Install as a login item and open in browser (macOS) |
+| `npm run rebuild` | Rebuild and restart the running login item (macOS) — use this after any code change |
 | `npm run uninstall` | Remove login item and stop server (macOS) |
 | `npm run dev` | Development server with hot reload |
-| `npm run build` | Production build |
+| `npm run build` | Production build only (does not restart a running login item) |
 | `npm start` | Start production server |
 
 ---
