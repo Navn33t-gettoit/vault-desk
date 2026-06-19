@@ -8,6 +8,8 @@
   <string>com.navn33t.vault-desk</string>
   <key>CFBundleName</key>
   <string>Vault Desk</string>
+  <key>CFBundleIconFile</key>
+  <string>icon.icns</string>
   <key>CFBundleDisplayName</key>
   <string>Vault Desk</string>
   <key>CFBundlePackageType</key>
