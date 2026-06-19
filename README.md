@@ -4,11 +4,16 @@
 
 # Vault Desk
 
+[![CI](https://github.com/Navn33t-gettoit/vault-desk/actions/workflows/ci.yml/badge.svg)](https://github.com/Navn33t-gettoit/vault-desk/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A local-first browser interface for Obsidian Vaults.
 
 Vault Desk runs as a lightweight local server and opens in your browser. Every edit is written directly back to your raw `.md` files in real time. No cloud, no account, no Electron.
 
 **Home address:** [http://127.0.0.1:7423](http://127.0.0.1:7423)
+
+> Built with AI assistance (Gemini for planning, Cursor and Claude for implementation). I'm not a professional developer — I had a problem I wanted to solve for my own Obsidian workflow and used AI tools to build it. Issues and PRs are welcome; response time depends on how well I (with AI help) can understand the change.
 
 <p align="center">
   <img src="docs/screenshots/dashboard-midnight.png" width="100%" alt="Vault Desk dashboard, Midnight theme">

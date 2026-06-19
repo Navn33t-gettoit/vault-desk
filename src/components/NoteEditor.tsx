@@ -20,7 +20,7 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
   const [content, setContent] = useState(initialContent);
   const [mode, setMode] = useState<ViewMode>("edit");
   const [saveState, setSaveState] = useState<SaveState>("idle");
-  const lastSaved = useRef(initialContent);
+  const [lastSaved, setLastSaved] = useState(initialContent);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stats = useMemo(() => computeMarkdownStats(content), [content]);
@@ -32,7 +32,7 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
   }, []);
 
   const save = useCallback(async () => {
-    if (content === lastSaved.current) return;
+    if (content === lastSaved) return;
 
     setSaveState("saving");
 
@@ -45,15 +45,15 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
 
       if (!response.ok) throw new Error("Save failed");
 
-      lastSaved.current = content;
+      setLastSaved(content);
       setSaveState("saved");
     } catch {
       setSaveState("error");
     }
-  }, [content, slug]);
+  }, [content, lastSaved, slug]);
 
   useEffect(() => {
-    if (content === lastSaved.current) return;
+    if (content === lastSaved) return;
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -64,7 +64,7 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [content, save]);
+  }, [content, lastSaved, save]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -90,7 +90,7 @@ export function NoteEditor({ slug, initialContent }: NoteEditorProps) {
         ? "Saved"
         : saveState === "error"
           ? "Save failed"
-          : content !== lastSaved.current
+          : content !== lastSaved
             ? "Unsaved changes"
             : "⌘S to save";
 
