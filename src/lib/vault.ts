@@ -2,26 +2,10 @@ import fs from "fs/promises";
 import path from "path";
 import { getConfiguredVaultPath } from "@/lib/vault-config.server";
 
-/** @deprecated Use runtime config from initialization scan. Fallback default only. */
-export const VAULT_PATH = "/Users/navn33t/Desktop";
-
-const SKIP_DIRS = new Set([".obsidian", "node_modules", ".git"]);
-
-export type VaultNote = {
-  slug: string;
-  updatedAt: Date;
+export type VaultNoteContent = {
+  title: string;
+  content: string;
 };
-
-function isMarkdownFile(filename: string): boolean {
-  return filename.toLowerCase().endsWith(".md");
-}
-
-function shouldSkipEntry(name: string, isDirectory: boolean): boolean {
-  if (name === ".DS_Store") return true;
-  if (name.startsWith(".")) return true;
-  if (isDirectory && SKIP_DIRS.has(name)) return true;
-  return false;
-}
 
 function normalizeSlug(rawSlug: string): string {
   let slug = rawSlug;
@@ -35,72 +19,6 @@ function normalizeSlug(rawSlug: string): string {
   }
   return slug;
 }
-
-async function getVaultRoot(): Promise<string> {
-  return getConfiguredVaultPath();
-}
-
-/** Recursively scan a directory and return all markdown files found beneath it. */
-async function scanDirectory(
-  absoluteDir: string,
-  relativePrefix = "",
-): Promise<VaultNote[]> {
-  const found: VaultNote[] = [];
-
-  let entries: string[];
-  try {
-    entries = await fs.readdir(absoluteDir);
-  } catch (error) {
-    console.error(`[vault] readdir failed for "${absoluteDir}":`, error);
-    return found;
-  }
-
-  for (const entry of entries) {
-    const absolutePath = path.join(absoluteDir, entry);
-    const relativePath = relativePrefix ? `${relativePrefix}/${entry}` : entry;
-
-    let stat;
-    try {
-      stat = await fs.stat(absolutePath);
-    } catch {
-      continue;
-    }
-
-    if (shouldSkipEntry(entry, stat.isDirectory())) continue;
-
-    if (stat.isDirectory()) {
-      const nested = await scanDirectory(absolutePath, relativePath);
-      found.push(...nested);
-      continue;
-    }
-
-    if (isMarkdownFile(entry)) {
-      found.push({
-        slug: relativePath.replace(/\.md$/i, ""),
-        updatedAt: stat.mtime,
-      });
-    }
-  }
-
-  return found;
-}
-
-export async function getLatestNotes(): Promise<VaultNote[]> {
-  const vaultRoot = await getVaultRoot();
-  if (!vaultRoot) return [];
-
-  try {
-    const notes = await scanDirectory(vaultRoot);
-    return notes.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-  } catch {
-    return [];
-  }
-}
-
-export type VaultNoteContent = {
-  title: string;
-  content: string;
-};
 
 export async function getNoteBySlug(rawSlug: string): Promise<VaultNoteContent | null> {
   const slug = normalizeSlug(rawSlug);
@@ -121,7 +39,7 @@ export async function resolveNoteFilePath(rawSlug: string): Promise<string | nul
   const slug = normalizeSlug(rawSlug);
   if (!slug || slug.includes("..")) return null;
 
-  const vaultRoot = path.resolve(await getVaultRoot());
+  const vaultRoot = path.resolve(await getConfiguredVaultPath());
   const filePath = path.resolve(vaultRoot, `${slug}.md`);
 
   if (filePath !== vaultRoot && !filePath.startsWith(`${vaultRoot}${path.sep}`)) {

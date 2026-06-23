@@ -1,4 +1,5 @@
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 
 const youtubeIdPattern =
   /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/i;
@@ -35,6 +36,13 @@ marked.use({
     link({ href, title, tokens }) {
       const text = this.parser.parseInline(tokens);
       const safeHref = href ?? "#";
+
+      // Block javascript: and data: URIs
+      const lc = safeHref.trim().toLowerCase();
+      if (lc.startsWith("javascript:") || lc.startsWith("data:")) {
+        return `<span>${text}</span>`;
+      }
+
       const isInternal = safeHref.startsWith("/");
       const externalAttrs = isInternal
         ? ""
@@ -45,10 +53,31 @@ marked.use({
   },
 });
 
+// Allow iframes for YouTube embeds, but strip everything else dangerous
+DOMPurify.addHook("uponSanitizeElement", (node, data) => {
+  if (data.tagName === "iframe") {
+    const src = (node as HTMLIFrameElement).getAttribute("src") ?? "";
+    if (!src.startsWith("https://www.youtube.com/embed/")) {
+      node.parentNode?.removeChild(node);
+    }
+  }
+});
+
 export function renderMarkdown(content: string): string {
   const preprocessed = preprocessWikilinks(content);
   const html = marked.parse(preprocessed, { async: false }) as string;
-  return enhanceMediaEmbeds(html);
+  const withEmbeds = enhanceMediaEmbeds(html);
+  return DOMPurify.sanitize(withEmbeds, {
+    ADD_TAGS: ["iframe"],
+    ADD_ATTR: [
+      "allow",
+      "allowfullscreen",
+      "frameborder",
+      "scrolling",
+      "referrerpolicy",
+      "loading",
+    ],
+  });
 }
 
 export function extractYouTubeId(url: string): string | null {

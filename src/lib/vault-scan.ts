@@ -10,6 +10,10 @@ import {
 
 const SKIP_DIRS = new Set([".obsidian", ".git", "node_modules"]);
 
+// In-process preview cache: slug -> { mtime, preview }
+// Cleared only when the process restarts. Keeps repeat scans fast.
+const previewCache = new Map<string, { mtime: number; preview: string }>();
+
 function isMarkdownFile(filename: string): boolean {
   return filename.toLowerCase().endsWith(".md");
 }
@@ -21,7 +25,11 @@ function shouldSkipEntry(name: string, isDirectory: boolean): boolean {
   return false;
 }
 
-async function extractPreview(filePath: string): Promise<string> {
+async function extractPreview(filePath: string, slug: string, mtime: number): Promise<string> {
+  const cached = previewCache.get(slug);
+  if (cached && cached.mtime === mtime) return cached.preview;
+
+  let preview = "";
   try {
     const content = await fs.readFile(filePath, "utf8");
     const lines = content.split("\n");
@@ -50,17 +58,19 @@ async function extractPreview(filePath: string): Promise<string> {
         .trim();
 
       if (clean.length > 12) {
-        return clean.length > 120 ? `${clean.slice(0, 120)}…` : clean;
+        preview = clean.length > 120 ? `${clean.slice(0, 120)}…` : clean;
+        break;
       }
     }
   } catch {}
-  return "";
+
+  previewCache.set(slug, { mtime, preview });
+  return preview;
 }
 
 export function validateVaultPath(vaultPath: string): string | null {
   if (!vaultPath || typeof vaultPath !== "string") return null;
   const resolved = path.resolve(vaultPath.trim());
-  if (resolved.includes("..")) return null;
   return resolved;
 }
 
@@ -115,7 +125,8 @@ async function scanDirectory(
 
     const topic = deriveTopic(relativePath);
     const slug = relativePath.replace(/\.md$/i, "");
-    const preview = await extractPreview(absolutePath);
+    const mtime = stat.mtimeMs;
+    const preview = await extractPreview(absolutePath, slug, mtime);
 
     found.push({
       title: titleFromRelativePath(relativePath),

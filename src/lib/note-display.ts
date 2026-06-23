@@ -31,7 +31,3 @@ export function formatUpdatedAt(iso: string): string {
     minute: "2-digit",
   });
 }
-
-export function folderLabelFromSlug(slug: string): string {
-  return `${displayTitle(slug)} vault`;
-}

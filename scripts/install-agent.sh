@@ -8,6 +8,10 @@ LABEL="com.vaultdesk.server"
 PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist"
 LOG="$ROOT/.vault-desk/server.log"
 
+# Read host/port from app.config.cjs so this script stays in sync with it
+APP_HOST=$(node -e "const c=require('$ROOT/app.config.cjs');process.stdout.write(c.APP_HOST)" 2>/dev/null || echo "127.0.0.1")
+APP_PORT=$(node -e "const c=require('$ROOT/app.config.cjs');process.stdout.write(String(c.APP_PORT))" 2>/dev/null || echo "7423")
+
 # Resolve node — check common locations
 NODE=""
 for candidate in \
@@ -54,9 +58,9 @@ cat > "$PLIST" << PLIST
     <string>${NEXT}</string>
     <string>start</string>
     <string>-H</string>
-    <string>127.0.0.1</string>
+    <string>${APP_HOST}</string>
     <string>-p</string>
-    <string>7423</string>
+    <string>${APP_PORT}</string>
   </array>
   <key>WorkingDirectory</key>
   <string>${ROOT}</string>
@@ -82,12 +86,12 @@ launchctl unload "$PLIST" 2>/dev/null || true
 launchctl load "$PLIST"
 
 echo ""
-echo "Vault Desk is now running at http://127.0.0.1:7423"
+echo "Vault Desk is now running at http://${APP_HOST}:${APP_PORT}"
 echo "It will start automatically every time you log in."
 echo ""
 echo "To stop:    npm run uninstall"
-echo "To open:    open http://127.0.0.1:7423"
+echo "To open:    open http://${APP_HOST}:${APP_PORT}"
 echo ""
 
 sleep 2
-open "http://127.0.0.1:7423"
+open "http://${APP_HOST}:${APP_PORT}"

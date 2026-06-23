@@ -56,7 +56,7 @@ Five built-in themes, cycled from the header button:
 * **Drag to reorder** — Rearrange note cards however you like.
 * **Real-time editing** — Changes write back to disk instantly.
 * **Live reading metrics** — Word count and reading time in the editor.
-* **Three themes** — Switch from the header.
+* **Five themes** — Switch from the header.
 
 ---
 
@@ -130,10 +130,10 @@ Edit `app.config.cjs`:
 const APP_PORT = 7423; // ← change this
 ```
 
-Then rebuild:
+Then reinstall the login item so it picks up the new port:
 
 ```bash
-npm run rebuild
+npm run setup
 ```
 
 ---
@@ -177,3 +177,11 @@ Running `npm run build` alone while the agent is still live serving the old buil
 |---|---|---|
 | `/api/scan` | `POST` | `{ "vaultPath": "/path" }` — scans vault, returns topics and notes |
 | `/api/save` | `POST` | `{ "slug", "content" }` — writes markdown back to disk |
+
+---
+
+### Known Limitations
+
+* **Search is title-only.** The search bar filters note cards by filename, not by content inside the notes. Full-text search across note bodies is not yet supported.
+* **Changing the port requires reinstalling the login item.** After editing `app.config.cjs`, run `npm run setup` again — `npm run rebuild` alone is not enough because the port is baked into the Launch Agent plist at install time.
+* **No mobile support.** Vault Desk is designed for desktop browsers at `127.0.0.1`. It is not optimised for mobile viewports.
